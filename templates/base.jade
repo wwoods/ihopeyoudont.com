@@ -1,0 +1,46 @@
+doctype 5
+html(lang="eng")
+  head
+    title I hope you don't!
+    include includes/cssreset
+    style(type="text/css")
+      body {
+        background-color: #ddd;
+        text-align: center;
+      }
+      #body-container {
+        margin-top: 2em;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: left;
+        border: solid 1px #000;
+        background-color: #fff;
+        border-radius: 0.3em;
+        padding: 1.0em;
+        width: 400px;
+      }
+
+      h1 {
+        font-family: sans;
+        font-size: 2em;
+        margin-bottom: 0.2em;
+      }
+      h2 {
+        font-size: 0.8em;
+        font-family: sans;
+        font-style: italic;
+        padding-left: 2em;
+        margin-bottom: 0.8em;
+      }
+      .dont {
+        color: #bbb;
+      }
+
+    block otherHeaders
+  body
+    #body-container
+      h1
+        span I hope you
+        span.dont &nbsp;don't...
+      h2 the art of subtly cursing
+      block content

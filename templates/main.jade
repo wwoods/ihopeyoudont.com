@@ -1,0 +1,23 @@
+extends base
+
+block otherHeaders
+  style(type="text/css")
+      .message { color: red; font-family: courier new; }
+
+block content
+  form(action="/submit", method="POST")
+    span
+      span I,
+      input(type="text", style="width:200px", maxlength=40, name="from",
+          value="a user of ihopeyoudont.com")
+      span , hope that
+      input(type="text", style="width:250px", maxlength=60, name="email",
+          value="someone@example.com")
+      span doesn't
+      input(type="text", style="width:350px", maxlength=80,
+          name="action", value="trip")
+    div
+      div.messages
+        for message in get_flashed_messages()
+          div.message #{ message }
+      input(type="submit", value="I certainly hope not!")
