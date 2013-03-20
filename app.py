@@ -1,5 +1,8 @@
-from flask import (flash, Flask, g, get_flashed_messages, render_template,
+import datetime
+from flask import (flash, Flask, get_flashed_messages, render_template,
         redirect, request, url_for)
+import hashlib
+import pymongo
 from smail import send_mail
 import threading
 import time
@@ -17,6 +20,13 @@ peacefully, now that you know this.
 
 Thank you,
 ihopeyoudont.com"""
+
+
+c = None
+def initDb():
+    global c
+    c = pymongo.Connection(host = app.config['MONGO_HOST'],
+            port = app.config['MONGO_PORT'])[app.config['MONGO_DATABASE']]
 
 
 requestsBase = [ time.time() ]
@@ -45,11 +55,28 @@ def welcome():
 def submit():
     email, action = request.form['email'], request.form['action']
     frm = request.form['from']
+    if len(frm) > 40:
+        flash("From field too long... did you cheat the browser?")
+        return redirect(url_for('welcome'))
+    if len(email) > 60:
+        flash("Destination e-mail field too long... did you cheat the browser?")
+        return redirect(url_for('welcome'))
+    if len(action) > 80:
+        flash("Action field too long... did you cheat the browser?")
+        return redirect(url_for('welcome'))
+
     if not email.endswith('@example.com'):
         if throttleTest():
             send_mail(app, email, "{0} has hope".format(frm),
                     body.format(frm = frm, action = action))
+            c['sent'].insert({ 'from': hashlib.sha1(frm).hexdigest(),
+                    'to': hashlib.sha1(email).hexdigest(),
+                    'msg': action,
+                    'tsSent': datetime.datetime.utcnow() })
         else:
+            now = datetime.datetime.utcnow().strftime("%Y%m%d")
+            c['throttling'].update({ '_id': 'throttles-' + now },
+                    { '$inc': { 'count': 1 } }, upsert = True)
             flash("Failed to send; throttling exceeded")
             return redirect(url_for('welcome'))
 
@@ -68,5 +95,6 @@ def accepted():
 
 
 if __name__ == '__main__':
+    initDb()
     app.run(port = app.config['PORT'])
 
