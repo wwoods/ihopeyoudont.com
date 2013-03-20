@@ -3,6 +3,8 @@ extends base
 block otherHeaders
   style(type="text/css")
       .message { color: red; font-family: courier new; }
+      .note { font-size: 0.8em; color: #333; margin-top: 1em; }
+      .note a { color: #333; }
 
 block content
   form(action="/submit", method="POST")
@@ -21,3 +23,6 @@ block content
         for message in get_flashed_messages()
           div.message #{ message }
       input(type="submit", value="I certainly hope not!")
+      div.note * No identifying information is stored in a recoverable manner;
+          |  check out the source on
+          | <a href="https://github.com/wwoods/ihopeyoudont.com">github</a>!
